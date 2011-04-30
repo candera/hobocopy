@@ -398,7 +398,8 @@ int _tmain(int argc, _TCHAR* argv[])
         }
 
         OutputWriter::WriteLine(TEXT("Calling SetBackupState")); 
-        CHECK_HRESULT(pBackupComponents->SetBackupState(TRUE, FALSE, options.get_BackupType(), FALSE)); 
+		// Issue #29: trying to figure out if using VSS_BT_INCREMENTAL causes a problem
+        CHECK_HRESULT(pBackupComponents->SetBackupState(TRUE, FALSE, VSS_BT_FULL, FALSE)); 
 
         OutputWriter::WriteLine(TEXT("Calling PrepareForBackup")); 
         CComPtr<IVssAsync> pPrepareForBackupResults; 

@@ -128,6 +128,47 @@ public:
             }
         }
     }
+	static HANDLE CreateFileWithRetry(LPCTSTR path)
+	{
+		DWORD retries = 0; 
+		BOOL worked = FALSE;
+		DWORD retryDelay = 250;
+		HANDLE hFile;
+		do
+		{
+			hFile = ::CreateFile(path,
+                        GENERIC_READ,
+                        FILE_SHARE_READ | FILE_SHARE_WRITE,
+                        NULL,
+                        OPEN_EXISTING,
+                        FILE_ATTRIBUTE_NORMAL,
+                        NULL);
+			if ( INVALID_HANDLE_VALUE == hFile )
+			{
+				DWORD err = GetLastError();
+
+				if ( ERROR_SHARING_VIOLATION == err )
+				{
+					// TODO: Log the fact that we're retrying
+					++retries;
+					Sleep(retryDelay);
+					retryDelay *= 2;
+					continue;
+				}
+				else
+				{
+					// An error occurred.
+					break;
+				}
+			}
+
+			worked = TRUE;
+			break;
+		} while ( retries < 5 );
+
+		return hFile;
+		
+	}
     static bool DirectoryExists(LPCTSTR directory)
     {
 		CString fixedPath(directory);
@@ -310,7 +351,7 @@ public:
 
     static LONGLONG GetFileSize(LPCTSTR path)
     {
-        HANDLE hFile = ::CreateFile(path, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL); 
+        HANDLE hFile = Utilities::CreateFileWithRetry(path);
 
         if (hFile == INVALID_HANDLE_VALUE)
         {

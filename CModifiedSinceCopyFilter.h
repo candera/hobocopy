@@ -56,14 +56,7 @@ public:
     
     bool IsFileMatch(LPCTSTR path)
     {
-        HANDLE hFile = ::CreateFile(
-            path, 
-            GENERIC_READ,
-            FILE_SHARE_READ | FILE_SHARE_WRITE, 
-            NULL, 
-            OPEN_EXISTING, 
-            FILE_ATTRIBUTE_NORMAL, 
-            NULL); 
+        HANDLE hFile = Utilities::CreateFileWithRetry(path);
 
         if (hFile == INVALID_HANDLE_VALUE)
         {

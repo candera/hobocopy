@@ -498,7 +498,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
             filters.push_back(new CFilespecCopyFilter(options.get_Filespecs())); 
 
-            CCopyAction copyAction(wszSource, options.get_Destination(), options.get_SkipDenied(), filters); 
+            CCopyAction copyAction(wszSource, options.get_Destination(), options.get_SkipDenied(), options.get_LockCommand(), filters); 
             ProcessDirectory(wszSource, copyAction, TEXT(""), options.get_Recursive(), options.get_IgnorePattern()); 
 
             for (unsigned int iFilter = 0; iFilter < filters.size(); ++iFilter)

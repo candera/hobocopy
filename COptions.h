@@ -38,6 +38,7 @@ private:
     CString _destination; 
     vector<CString> _filespecs; 
     std::wregex* _ignorePattern;
+	CString _lockCommand;
     bool _recursive; 
     bool _simulate; 
     bool _skipDenied; 
@@ -74,6 +75,10 @@ public:
     {
         return _ignorePattern;
     }
+	LPCTSTR get_LockCommand(void)
+	{
+		return NullIfEmpty(_lockCommand);
+	}
     bool get_Recursive(void)
     {
         return _recursive; 
@@ -99,7 +104,7 @@ public:
         return TEXT("Usage:\n\n")
             TEXT("hobocopy [/statefile=FILE] [/verbosity=LEVEL]\n")
             TEXT("         [ /full | /incremental ] [ /clear ] [ /skipdenied ] [ /y ]\n")
-            TEXT("         [ /simulate ] [/recursive]\n")
+            TEXT("         [ /simulate ] [/recursive] [/onlocked=CMD\n")
             TEXT("         <src> <dest> [<file> [<file> [ ... ] ]\n")
             TEXT("\n")
             TEXT("Recursively copies a directory tree from <src> to <dest>.\n")
@@ -145,6 +150,11 @@ public:
             TEXT("\n")
             TEXT("/simulate    - Simulates copy only - no snapshot is taken and no copy\n")
             TEXT("               is performed.\n")
+            TEXT("\n")
+			TEXT("/onlocked    - When error 33 (another process has locked a portion of the file)\n")
+		    TEXT("               or error 32 (file is in use), launch the command specified by\n")
+			TEXT("               CMD, passing the path to the locked file as an argument.\n")
+			TEXT("               This feature was introduced for troubleshooting purposes only.\n")
             TEXT("\n")
             TEXT("/recursive   - Copies subdirectories (including empty ones). Shortcut: /r\n")
             TEXT("\n")
@@ -206,6 +216,10 @@ public:
                 {
                     options._stateFile = GetArgValue(arg); 
                 }
+				else if (Utilities::StartsWith(arg, TEXT("onlocked=")))
+				{
+					options._lockCommand = GetArgValue(arg);
+				}
                 else if (Utilities::StartsWith(arg, TEXT("verbosity=")))
                 {
                     options._verbosityLevel = _ttoi(GetArgValue(arg)); 
@@ -266,6 +280,11 @@ public:
         {
             options._stateFile = NormalizePath(options._stateFile); 
         }
+
+		if (!options._lockCommand.IsEmpty())
+		{
+			options._lockCommand = NormalizePath(options._lockCommand);
+		}
 
         return options; 
     }

@@ -36,18 +36,20 @@ private:
     int _directoryCount; 
     int _fileCount; 
     vector<CCopyFilter*> _filters; 
+	LPCTSTR _lockCommand;
     int _skipCount; 
     bool _skipDenied; 
     LPCTSTR _source; 
 
 public: 
-    CCopyAction::CCopyAction(LPCTSTR source, LPCTSTR destination, bool skipDenied, vector<CCopyFilter*> filters) : _filters(filters)
+    CCopyAction::CCopyAction(LPCTSTR source, LPCTSTR destination, bool skipDenied, LPCTSTR lockCommand, vector<CCopyFilter*> filters) : _filters(filters)
     {
         _source = source; 
         _destination = destination; 
         _skipDenied = skipDenied; 
         _fileCount = 0; 
         _directoryCount = 0; 
+		_lockCommand = lockCommand;
         _skipCount = 0; 
         _byteCount = 0; 
     }
@@ -101,7 +103,11 @@ public:
         if (IsFileMatch(sourceFile))
         {
             BOOL worked = ::CopyFile(sourceFile, destinationFile, false);
-            if (!worked)
+#ifdef TESTING
+			if (true)
+#else
+			if (!worked)
+#endif
             {
                 DWORD error = ::GetLastError();
 
@@ -112,6 +118,39 @@ public:
                     OutputWriter::WriteLine(message, VERBOSITY_THRESHOLD_NORMAL); 
                     ++_skipCount; 
                 }
+#ifdef TESTING
+				else if (true)
+#else
+				else if ((error == 32 || error == 33) && _lockCommand != NULL)
+#endif
+				{
+					CString lockCommand; 
+					lockCommand.Format(TEXT("\"%s\" \"%s\""), _lockCommand, path);
+					LPTSTR szCmdLine = _tcsdup(lockCommand);
+
+					CString message;
+					message.Format(TEXT("Encountered error %d accessing file %s."), error, sourceFile);
+					OutputWriter::WriteLine(message, VERBOSITY_THRESHOLD_UNLESS_SILENT);
+										
+					STARTUPINFO startupInfo; 
+					memset(&startupInfo, 0, sizeof(startupInfo));
+					startupInfo.cb = sizeof(startupInfo);
+
+					PROCESS_INFORMATION processInformation;
+
+					CString notification;
+					notification.Format(TEXT("Launching %s and terminating."), lockCommand);
+					OutputWriter::WriteLine(notification, VERBOSITY_THRESHOLD_UNLESS_SILENT);
+
+					::CreateProcess(NULL, szCmdLine, NULL, NULL, FALSE, 0, NULL, NULL, &startupInfo, &processInformation);
+
+					::WaitForSingleObject(processInformation.hProcess, INFINITE);
+
+					// TODO: we ought to clean up here, but this is just temporary diagnostic code, and we're going to terminate 
+					// the process anyway.
+
+					throw new CHoboCopyException(message);
+				}
                 else
                 {
                     CString errorMessage; 

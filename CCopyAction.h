@@ -105,7 +105,7 @@ public:
             {
                 DWORD error = ::GetLastError();
 
-                if ((error == 5 || error == 32) && _skipDenied)
+                if ((error == 5 || error == 32 || error == 123) && _skipDenied)
                 {
                     CString message; 
                     message.Format(TEXT("Error %d accessing file %s. Skipping."), error, sourceFile); 

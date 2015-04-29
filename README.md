@@ -1,3 +1,9 @@
+# STATUS
+
+Hobocopy is no longer under active development. As far as I know, it still works, but even I don't use it any more. Instead, I use a tool I wrote called [Shadowspawn](https://github.com/candera/shadowspawn) plus something like robocopy or rsync. I consider Shadowspawn the replacement for hobocopy.
+
+You are welcome to download hobocopy and use it, and I still try to answer questions, but I won't be releasing new versions. You are welcome to fork the project - the license (MIT) is very permissive.
+
 # WHAT IS HOBOCOPY? 
 
 HoboCopy is a backup/copy tool. It is inspired by robocopy in both name and in

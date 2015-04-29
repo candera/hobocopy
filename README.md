@@ -1,44 +1,44 @@
-# WHAT IS HOBOCOPY? 
+# WHAT IS HOBOCOPY?
 
 HoboCopy is a backup/copy tool. It is inspired by robocopy in both name and in
-functionality. It differs greatly from robocopy, however, in two respects: 
+functionality. It differs greatly from robocopy, however, in two respects:
 
-1. It is not as full-featured as robocopy. 
+1. It is not as full-featured as robocopy.
 2. It uses the Volume Shadow Service (VSS) to "snapshot" the disk
 before copying. It then copies from the snapshot rather than the "live" disk.
-   
+
 # INSTALLING HOBOCOPY
 
-Most users can simply unzip the file containing hobocopy.exe into the directory 
+Most users can simply unzip the file containing hobocopy.exe into the directory
 of your choice. However, HoboCopy uses the Visual C++ 8.0 runtime, which may
-not be present on some machines. If HoboCopy does not work for you, run the 
-vcredist executable available from the same location you downloaded HoboCopy. 
-   
-# WHY DOES HOBCOPY USE THE VOLUME SHADOW SERVICE?    
-   
-Because HoboCopy copies from a VSS snapshot, it is able copy even files that 
-are in locked by some other program. Further, certain programs (such as SQL 
-Server 2005) are VSS-aware, and will write their state to disk in a consistent
-state before the snapshot is taken, allowing a sort of "live backup". Files 
-locked by VSS-unaware programs will still be copied in a "crash consistent"
-state (i.e. whatever happens to be on the disk). This is generally a lot 
-better than not being able to copy the file at all. 
+not be present on some machines. If HoboCopy does not work for you, run the
+vcredist executable available from the same location you downloaded HoboCopy.
 
-# IS HOBOCOPY A BACKUP TOOL? 
+# WHY DOES HOBOCOPY USE THE VOLUME SHADOW SERVICE?    
+
+Because HoboCopy copies from a VSS snapshot, it is able copy even files that
+are in locked by some other program. Further, certain programs (such as SQL
+Server 2005) are VSS-aware, and will write their state to disk in a consistent
+state before the snapshot is taken, allowing a sort of "live backup". Files
+locked by VSS-unaware programs will still be copied in a "crash consistent"
+state (i.e. whatever happens to be on the disk). This is generally a lot
+better than not being able to copy the file at all.
+
+# IS HOBOCOPY A BACKUP TOOL?
 
 Well, not exactly. It can be used that way, but it doesn't do a few things
 that "real" backup tools to. For example, there's currently no support for
 differential copies. Also, it does not currently make use of the OS support
 for doing backups that would allow it to do things like copy even files
-it does not nominally have permission to copy. 
+it does not nominally have permission to copy.
 
-The other caveat is that HoboCopy is a hobby project. Therefore, it is not 
-recommended that anyone use it as a backup strategy for valuable information 
-- no warranty is provided in the event that something goes wrong. 
+The other caveat is that HoboCopy is a hobby project. Therefore, it is not
+recommended that anyone use it as a backup strategy for valuable information
+- no warranty is provided in the event that something goes wrong.
 
-That said, the author of the tool uses it to back up his own systems. 
+That said, the author of the tool uses it to back up his own systems.
 
-# USAGE: 
+# USAGE:
 
 <pre>
 hobocopy [/statefile=FILE] [/verbosity=LEVEL] [ /full | /incremental ]

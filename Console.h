@@ -89,7 +89,7 @@ public:
         DWORD charsWritten; 
         BOOL bWorked = ::WriteFile(get_StandardOutput(), narrowMessage, messageString.GetLength(), &charsWritten, NULL); 
 
-        Utilities::Free(narrowMessage); 
+        delete [] narrowMessage; 
 
         if (!bWorked)
         {

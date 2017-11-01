@@ -305,7 +305,7 @@ private:
             }
             else if (result > MAX_PATH)
             {
-                delete normalizedPath; 
+                delete [] normalizedPath; 
                 length = result; 
             }
             else
